@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"math/rand"
 	"net/http"
 	"os"
 	"strings"
@@ -15,17 +16,17 @@ func main() {
 	log.Output(1, date)
 	http.HandleFunc("/coke_promotion_banner.webp", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "image/webp")
-		file := prepareFile(month, year)
+		file := prepareFile(month)
 		w.Write(file)
 	})
 
 	log.Fatal(http.ListenAndServe(":9000", nil))
 }
 
-func prepareFile(month time.Month, year int) []byte {
-	buf, err := os.ReadFile(fmt.Sprint(year, "/", strings.ToLower(month.String()), ".webp"))
-
-	if err != nil {
+func prepareFile(month time.Month) []byte {
+	var buf []byte
+	entries, err := os.ReadDir(fmt.Sprint(strings.ToLower(month.String())))
+	if err != nil || len(entries) < 1 {
 		buf, err = os.ReadFile("default.webp")
 		if err != nil {
 			log.Output(1, "[CDN] no default file found")
@@ -33,7 +34,10 @@ func prepareFile(month time.Month, year int) []byte {
 			log.Output(1, "[CDN] serving default.webp")
 		}
 	} else {
-		log.Output(1, fmt.Sprint("[CDN] serving ", year, "/", strings.ToLower(month.String()), ".webp"))
+		buf, err = os.ReadFile(fmt.Sprint(strings.ToLower(month.String()), "/", entries[rand.Intn(len(entries))].Name()))
+		if err != nil {
+			log.Output(1, fmt.Sprint("[CDN] serving ", strings.ToLower(month.String()), "/", entries[rand.Intn(len(entries))].Name()))
+		}
 	}
 
 	return buf

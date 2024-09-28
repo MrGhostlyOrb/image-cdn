@@ -8,7 +8,16 @@ import (
 	"os"
 	"strings"
 	"time"
+
+	"github.com/joho/godotenv"
 )
+
+func init() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+}
 
 func main() {
 	year, month, day := time.Now().Date()
@@ -25,7 +34,12 @@ func main() {
 		w.Write(file)
 	})
 
-	log.Fatal(http.ListenAndServe(":9000", nil))
+	port := os.Getenv("PORT")
+	log.Printf("Starting server on http://0.0.0.0:%s\n", port)
+	err := http.ListenAndServe(":"+port, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func prepareFile(month time.Month) ([]byte, error) {

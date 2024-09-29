@@ -3,8 +3,9 @@
 ## Usage
 
 1. cd into the project directory
-2. `go run main.go`
-3. The web server will be running on 0.0.0.0:9000
+2. Set `PORT` in .env
+3. `go run main.go`
+4. The web server will be running on `0.0.0.0:<PORT>`
 
 ## Content
 

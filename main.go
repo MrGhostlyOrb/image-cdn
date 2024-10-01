@@ -24,6 +24,7 @@ func main() {
 	date := fmt.Sprintf("[CDN startup] The date is %d %s %d", day, month, year)
 	log.Output(1, date)
 	http.HandleFunc("/coke_promotion_banner.webp", func(w http.ResponseWriter, r *http.Request) {
+		_, month, _ := time.Now().Date()
 		w.Header().Set("Content-Type", "image/webp")
 		file, err := prepareFile(month)
 		if err != nil {

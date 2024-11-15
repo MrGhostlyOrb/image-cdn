@@ -36,8 +36,9 @@ func main() {
 	})
 
 	port := os.Getenv("PORT")
-	log.Printf("Starting server on http://0.0.0.0:%s\n", port)
-	err := http.ListenAndServe(":"+port, nil)
+	address := os.Getenv("ADDRESS")
+	log.Printf("Starting server on http://%s:%s\n", address, port)
+	err := http.ListenAndServe(address+":"+port, nil)
 	if err != nil {
 		log.Fatal(err)
 	}

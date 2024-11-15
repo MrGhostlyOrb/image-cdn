@@ -1,0 +1,17 @@
+version: '3.8'
+services:
+  richmond-paper-supply-website:
+    container_name: richmond-paper-supply-cdn
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    networks:
+      - reverse-proxy
+    pull_policy: build
+    environment:
+      - PORT=${PORT}
+      - ADDRESS=${ADDRESS}
+networks:
+  reverse-proxy:
+    external: true

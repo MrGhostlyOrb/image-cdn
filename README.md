@@ -1,4 +1,4 @@
-# Richmond Paper Supply CDN
+# Image CDN
 
 ## Usage
 

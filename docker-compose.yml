@@ -9,9 +9,8 @@ services:
     networks:
       - reverse-proxy
     pull_policy: build
-    environment:
-      - PORT=${PORT}
-      - ADDRESS=${ADDRESS}
+    env_file: 
+      - stack.env
 networks:
   reverse-proxy:
     external: true

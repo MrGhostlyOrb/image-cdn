@@ -26,7 +26,20 @@ func main() {
 	http.HandleFunc("/coke_promotion_banner.webp", func(w http.ResponseWriter, r *http.Request) {
 		_, month, _ := time.Now().Date()
 		w.Header().Set("Content-Type", "image/webp")
-		file, err := prepareFile(month)
+		file, err := prepareFileBanner(month)
+		if err != nil {
+			log.Output(1, fmt.Sprint("[CDN] ", err))
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+		w.Write(file)
+	})
+
+	http.HandleFunc("/product-images", func(w http.ResponseWriter, r *http.Request) {
+		queryParams := r.URL.Query()
+		product := queryParams.Get("product")
+		w.Header().Set("Content-Type", "image/webp")
+		file, err := prepareFileProduct(product)
 		if err != nil {
 			log.Output(1, fmt.Sprint("[CDN] ", err))
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -44,7 +57,7 @@ func main() {
 	}
 }
 
-func prepareFile(month time.Month) ([]byte, error) {
+func prepareFileBanner(month time.Month) ([]byte, error) {
 	var buf []byte
 	monthLower := strings.ToLower(month.String())
 	entries, err := os.ReadDir(fmt.Sprint(monthLower))
@@ -62,6 +75,23 @@ func prepareFile(month time.Month) ([]byte, error) {
 			return nil, err
 		} else {
 			log.Output(1, fmt.Sprint("[CDN] serving ", monthLower, "/", entries[randomImageIndex].Name()))
+		}
+	}
+
+	return buf, nil
+}
+
+func prepareFileProduct(product string) ([]byte, error) {
+	var buf []byte
+	entries, err := os.ReadDir("products")
+	if err != nil || len(entries) < 1 {
+		return nil, err
+	} else {
+		buf, err = os.ReadFile(fmt.Sprint("products/", product, ".webp"))
+		if err != nil {
+			return nil, err
+		} else {
+			log.Output(1, fmt.Sprint("[CDN] serving ", "products/", product, ".webp"))
 		}
 	}
 
